@@ -1,10 +1,10 @@
-{
+﻿{
   "meta": {
     "id": "test_item_use",
     "name": "测试-物品使用触发",
     "author": "ImmersiveCinematics",
     "version": 3,
-    "description": "玩家使用钻石头盔（右键装备）时触发",
+    "description": "玩家使用钻石头盔时触发",
     "triggers": [
       {
         "id": "use_helmet",

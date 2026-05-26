@@ -1,10 +1,10 @@
-{
+﻿{
   "meta": {
     "id": "test_biome",
-    "name": "测试-群系触发",
+    "name": "测试-生物群系触发",
     "author": "ImmersiveCinematics",
     "version": 3,
-    "description": "玩家进入沙漠群系时触发",
+    "description": "玩家进入沙漠生物群系时触发",
     "triggers": [
       {
         "id": "enter_desert",

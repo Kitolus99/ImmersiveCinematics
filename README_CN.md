@@ -1,96 +1,86 @@
 # ImmersiveCinematics
 
-**给你的整合包加上过场动画。** 一个模组搞定叙事——写 JSON 或用编辑器，不需要指令方块。
+给 Minecraft 整合包、冒险地图和服务器剧情添加可编排的过场动画。你可以手写 JSON 脚本，也可以在游戏内用时间轴编辑器创建镜头。
 
-[English Documentation](README.md)
+[English Documentation](README.md) | [中文 Wiki](docs/zh/index.md) | [脚本格式](SCRIPT_FORMAT.md) | [触发器参考](TRIGGER_TYPES.md)
 
-> 本项目由 AI Agent 生成。作者仅提供创意和概念，AI Agent 负责代码实现和功能开发。
+> 本仓库是 `SanZiNEO/ImmersiveCinematics` 的 fork，当前中文资料基于仓库源码与 DeepWiki 分析整理。
 
----
+## 这是什么
 
-## 这是什么？
+ImmersiveCinematics 是一个 Minecraft Forge 1.20.1 模组。它把“何时播放”和“如何播放”分开：
 
-ImmersiveCinematics 是一个为整合包设计的过场动画模组。服务端触发系统配合客户端播放，脚本作者通过 JSON 或游戏内编辑器定义过场动画，在指定条件（登录、位置、进度、群系、维度切换、击杀、交互、合成、使用物品、物品栏、结构、游戏阶段、自定义事件、指令 — 共 14 种触发方式）满足时自动播放。
+- 服务端触发系统监听登录、位置、进度、生物群系、维度切换、击杀、交互、合成、使用物品、物品栏、结构、游戏阶段、自定义事件等条件。
+- 客户端播放引擎解析 JSON 脚本，并驱动相机、黑边、音频、事件轨道等时间轴内容。
+- 游戏内编辑器提供可视化时间轴、预览区、属性面板和触发器面板，适合不想手写完整 JSON 的作者。
 
-**适用场景：**
-- 进新区域自动播放入场动画
-- Boss 战前的剧情展示
-- 开宝箱时镜头特写
-- 固定机位视角解谜（生化危机0式）
-- 自动飞行巡览展示地图
+## 适用场景
 
----
+- 玩家进入新区域时自动播放入场镜头。
+- Boss 战前播放剧情展示或场景巡视。
+- 解谜房间使用固定机位或轨道镜头。
+- 服务器新手引导、地图导览、建筑展示。
+- 和命令、其它模组事件结合，做更完整的叙事流程。
 
-## 功能特性
+## 功能概览
 
-**过场动画系统**
-- 6 自由度相机：位置、偏航、俯仰、滚转、FOV、缩放
-- 关键帧驱动+贝塞尔曲线路径，流畅镜头运动
-- 相对/绝对定位，循环播放，无限时长
-- 多轨道时间轴：相机、黑边、音频、事件、模组事件
-- 宽银幕遮幅（2.35:1）带渐入/渐出动画
-- 镜头间交叉淡化过渡
-
-**触发器系统（服务端）**
-- 14 种触发类型：登录、位置（点+半径/方体区域）、进度、群系、维度切换、击杀、交互、合成、使用物品、物品栏、结构、游戏阶段、自定义事件、指令
-- 支持 OR/AND 逻辑和通配符匹配
-- 可重复触发或单次触发，支持延迟执行
-
-**运行时控制**
-- 18 项行为标志：可跳过、可打断、末帧保持、键盘/鼠标/生物 AI 屏蔽、7 项独立 HUD 开关、隐藏手臂、视角摇晃抑制、显示玩家模型、暂停时冻结等
-- 脚本排队与打断机制，适用于固定视角区域
-- 多玩家脚本追踪与完成状态同步
-
-**兼容性**
-- 光影包兼容（不侵入 OpenGL 管线）
-- 视角摇晃抑制（受伤抖动、行走摇晃、反胃效果）
-- 暂停感知：游戏暂停时脚本自动冻结
-
----
+- 6 自由度相机：位置、yaw、pitch、roll、FOV、zoom。
+- 关键帧动画、相对/绝对坐标、循环、无限时长。
+- 多轨道时间轴：`camera`、`letterbox`、`audio`、`event`、`mod_event`。
+- 电影黑边，支持宽高比、淡入、淡出。
+- 服务端触发器，支持事件驱动和轮询驱动两类流程。
+- 运行时行为控制：屏蔽输入、隐藏 HUD/手臂、抑制视角晃动、可跳过、可打断、末帧保持等。
+- 游戏内编辑器：默认按 `F6` 打开，默认长按 `C` 跳过可跳过脚本。
 
 ## 快速开始
 
-1. 安装 [Minecraft Forge 1.20.1](https://files.minecraftforge.net/net/minecraftforge/forge/index_1.20.1.html)（47.x+）
-2. 下载 ImmersiveCinematics 并放入 `.minecraft/mods/`
-3. 启动游戏
+1. 安装 Minecraft Forge 1.20.1（47.x）。
+2. 将构建出的 jar 放入 `.minecraft/mods/`。
+3. 将 `.json` 过场脚本放到 `immersive_cinematics/scripts/`。
+4. 进入游戏后使用命令播放：
 
-### 命令
+```mcfunction
+/icinematics play example_orbit
+/icinematics stop
+/icinematics status
+```
 
-| 命令 | 说明 |
-|------|------|
-| `/icinematics play <文件>` | 播放过场动画脚本 |
-| `/icinematics stop` | 停止当前播放 |
-| `/icinematics status` | 显示播放状态 |
+脚本搜索顺序见 [配置与命令](docs/zh/configuration.md)：全局目录、世界目录、绝对路径。
 
-### 游戏内编辑器
+## 开发验证
 
-使用内置的时间轴编辑器，无需离开游戏即可可视化创建和修改脚本。
+```powershell
+.\gradlew.bat build --stacktrace --no-daemon
+.\gradlew.bat runClient --stacktrace --no-daemon
+```
 
-单一构建包含播放运行时和游戏内编辑器，所有用户下载同一个 jar 即可。
+`runClient` 会启动 Minecraft 开发客户端，不会自动退出；看到客户端正常进入后，手动关闭即可。
 
----
+当前已验证构建产物：
+
+```text
+build/libs/immersive_cinematics-0.3.1.jar
+```
+
+## 阅读入口
+
+- [中文 Wiki 总览](docs/zh/index.md)
+- [架构说明](docs/zh/architecture.md)
+- [脚本格式](docs/zh/script-format.md)
+- [触发系统](docs/zh/triggers.md)
+- [播放引擎](docs/zh/playback-engine.md)
+- [游戏内编辑器](docs/zh/editor.md)
+- [配置与命令](docs/zh/configuration.md)
 
 ## 版本
 
-**当前版本：0.3.1**
-
-| | 版本 |
-|---|------|
+| 项目 | 版本 |
+| --- | --- |
+| Mod | 0.3.1 |
 | Minecraft | 1.20.1 |
-| Forge | 47.x+ |
+| Forge | 47.x |
 | 脚本格式 | v3 |
-
----
-
-## 未来计划
-
-**0.4.0**
-- 音频轨道：背景音乐/音效在时间轴上同步播放，支持淡入淡出和循环
-- 事件轨道：在时间轴任意时间点执行游戏内命令
-- 时间轴多轨道完整支持：全部轨道类型可视化编辑
-
----
 
 ## 许可证
 
-MIT 许可证
+MIT License

@@ -1,10 +1,10 @@
-{
+﻿{
   "meta": {
     "id": "test_inventory_decrease",
     "name": "测试-物品减少",
     "author": "ImmersiveCinematics",
     "version": 3,
-    "description": "玩家玻璃数量减少时触发（物品减少检测，放置/丢弃玻璃）",
+    "description": "玩家玻璃数量减少时触发（放置或丢弃玻璃）",
     "triggers": [
       {
         "id": "glass_used",

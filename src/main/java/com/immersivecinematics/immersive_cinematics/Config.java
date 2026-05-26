@@ -6,12 +6,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.config.ModConfigEvent;
 
 /**
- * ImmersiveCinematics 模组配置
- * <p>
- * 当前为最小化配置，后续阶段按需扩展：
- * - 阶段2：脚本播放相关配置（默认播放速度、循环行为等）
- * - 阶段3：网络/触发器相关配置
- * - 阶段4：编辑器相关配置
+ * ImmersiveCinematics 模组配置。
  */
 @Mod.EventBusSubscriber(modid = ImmersiveCinematics.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class Config {
@@ -33,8 +28,8 @@ public class Config {
     // ===== 跳过投票配置 =====
 
     private static final ForgeConfigSpec.IntValue SKIP_VOTE_RATIO = BUILDER
-            .comment("跳过投票所需比例（百分比），全部玩家投票后跳过才生效",
-                    "例: 100 = 所有玩家必须投跳过, 50 = 半数即可")
+            .comment("跳过投票所需比例（百分比），达到比例后才会跳过",
+                    "示例: 100 = 所有玩家必须投跳过, 50 = 半数即可")
             .defineInRange("skipVoteRatio", 100, 10, 100);
 
     // ===== 调试配置 =====

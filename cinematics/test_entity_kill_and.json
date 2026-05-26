@@ -1,10 +1,10 @@
-{
+﻿{
   "meta": {
     "id": "test_entity_kill_and",
-    "name": "测试-击杀触发AND",
+    "name": "测试-击杀触发 AND",
     "author": "ImmersiveCinematics",
     "version": 3,
-    "description": "玩家击杀羊、僵尸、蜘蛛各至少一次后触发（AND模式）",
+    "description": "玩家击杀绵羊、僵尸和蜘蛛各至少一次后触发（AND 模式）",
     "triggers": [
       {
         "id": "kill_all",

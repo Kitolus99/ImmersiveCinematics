@@ -1,59 +1,54 @@
-# Immersive Cinematics — 脚本格式参考
+# ImmersiveCinematics 脚本格式参考
 
-本文档面向脚本作者，完整说明 `.json` 脚本文件的全部可用字段与结构。
-
----
+本文面向脚本作者，说明 `.json` 过场脚本的结构、字段和常见写法。更完整的中文说明见 [docs/zh/script-format.md](docs/zh/script-format.md)。
 
 ## 根结构
 
 ```json
 {
-  "meta":     { ... },
-  "timeline": { ... }
+  "meta": {},
+  "timeline": {}
 }
 ```
 
----
+## `meta`
 
-## 1. `meta` — 脚本元信息
+`meta` 描述脚本身份、运行时行为和触发器。
 
-### 1a. 身份标识
+| 字段 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `id` | string | 是 | 无 | 脚本唯一 ID，只允许 `[a-zA-Z0-9_]`，最长 32 字符 |
+| `name` | string | 是 | 无 | 显示名称，最长 50 字符 |
+| `author` | string | 是 | 无 | 作者名，最长 30 字符 |
+| `version` | int | 是 | 无 | 当前固定为 `3` |
+| `description` | string | 否 | `""` | 脚本描述 |
+| `dimension` | string | 否 | `null` | 预留维度限制字段 |
+| `triggers` | array | 否 | `[]` | 自动触发条件 |
 
-| 字段 | 类型 | 必需 | 默认 | 说明 |
-|------|------|------|------|------|
-| `id` | string | 是 | — | 脚本唯一 ID，仅允许 `[a-zA-Z0-9_]`，最长 32 字符 |
-| `name` | string | 是 | — | 脚本显示名称，最长 50 字符 |
-| `author` | string | 是 | — | 作者名，最长 30 字符 |
-| `version` | int | 是 | — | 固定为 `3`（仅支持版本 3） |
-| `description` | string | 否 | `""` | 脚本描述文本 |
-| `dimension` | string | 否 | `null` | 限制脚本只在指定维度可用 |
+### 运行时行为
 
-
-### 1b. 运行时行为 (RuntimeBehavior)
-
-| 字段 | 类型 | 默认 | 说明 |
-|------|------|------|------|
+| 字段 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
 | `block_keyboard` | boolean | `true` | 播放期间屏蔽键盘输入 |
 | `block_mouse` | boolean | `true` | 播放期间屏蔽鼠标输入 |
-| `block_mob_ai` | boolean | `false` | 清除附近怪物 AI（性能消耗较大，慎用） |
-| `hide_hud` | boolean | `true` | 隐藏全部 HUD |
+| `block_mob_ai` | boolean | `false` | 预留/兼容字段 |
+| `hide_hud` | boolean | `true` | 隐藏 HUD |
 | `hide_arm` | boolean | `true` | 隐藏第一人称手臂 |
 | `suppress_bob` | boolean | `true` | 抑制视角晃动 |
-| `hide_chat` | boolean | `null` | `null`=跟随 `hide_hud`，`true/false`=强制显隐 |
-| `hide_scoreboard` | boolean | `null` | 同上 |
-| `hide_action_bar` | boolean | `null` | 同上 |
-| `hide_title` | boolean | `null` | 同上 |
-| `hide_subtitles` | boolean | `null` | 同上 |
-| `hide_hotbar` | boolean | `null` | 同上 |
-| `hide_crosshair` | boolean | `null` | 同上 |
-| `render_player_model` | boolean | `true` | 是否渲染玩家模型（第三人称时） |
-| `pause_when_game_paused` | boolean | `true` | 游戏暂停时是否暂停过场动画 |
-| `interruptible` | boolean | `true` | 是否允许被其他脚本打断 |
-| `skippable` | boolean | `true` | 是否允许玩家长按跳过 |
-| `hold_at_end` | boolean | `false` | 播放完毕后是否停留在最后一帧 |
+| `hide_chat` | boolean/null | `null` | `null` 表示跟随 `hide_hud` |
+| `hide_scoreboard` | boolean/null | `null` | 同上 |
+| `hide_action_bar` | boolean/null | `null` | 同上 |
+| `hide_title` | boolean/null | `null` | 同上 |
+| `hide_subtitles` | boolean/null | `null` | 同上 |
+| `hide_hotbar` | boolean/null | `null` | 同上 |
+| `hide_crosshair` | boolean/null | `null` | 同上 |
+| `render_player_model` | boolean | `true` | 是否渲染玩家模型 |
+| `pause_when_game_paused` | boolean | `true` | 游戏暂停时是否冻结脚本时间 |
+| `interruptible` | boolean | `true` | 是否允许被其它脚本打断 |
+| `skippable` | boolean | `true` | 是否允许玩家长按跳过键提前结束 |
+| `hold_at_end` | boolean | `false` | 播放结束后是否停留在最后一帧 |
 
-
-### 1c. Triggers（触发条件）
+### 触发器
 
 ```json
 "triggers": [
@@ -67,181 +62,159 @@
 ]
 ```
 
-| 字段 | 类型 | 必需 | 默认 | 说明 |
-|------|------|------|------|------|
-| `id` | string | 是 | — | 触发器唯一标识 |
-| `type` | string | 是 | — | 触发器类型，见下方列表 |
-| `conditions` | object | 否 | `{}` | 类型对应的条件参数 |
+| 字段 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `id` | string | 否 | 当前解析器不使用 | 建议保留，方便编辑器和人工阅读 |
+| `type` | string | 是 | 无 | 触发器类型 |
+| `conditions` | object | 否 | `{}` | 类型对应的条件 |
 | `repeatable` | boolean | 否 | `false` | 是否可重复触发 |
-| `delay` | number | 否 | `0` | 触发后延迟执行秒数 |
+| `delay` | number | 否 | `0` | 条件满足后延迟执行秒数 |
 
-全部触发类型及条件参数见 `TRIGGER_TYPES.md`。
+完整触发器字段见 [TRIGGER_TYPES.md](TRIGGER_TYPES.md)。
 
----
-
-## 2. `timeline` — 时间线
+## `timeline`
 
 ```json
 "timeline": {
-  "total_duration": 60.0,
-  "tracks": [ ... ]
+  "total_duration": 30.0,
+  "tracks": []
 }
 ```
 
-| 字段 | 类型 | 必需 | 说明 |
-|------|------|------|------|
-| `total_duration` | float | 是 | 总时长（秒），正数=定长，负数=无限 |
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `total_duration` | float | 是 | 总时长，正数为有限时长，负数为无限时长，不能为 0 |
 | `tracks` | array | 是 | 轨道数组 |
 
----
+## 轨道类型
 
-## 3. 轨道类型
+轨道写法为：
 
-每条轨道包含 `type` 和 `clips[]`。
+```json
+{
+  "type": "CAMERA",
+  "clips": []
+}
+```
 
-| 轨道类型 | 说明 |
-|---------|------|
-| `"camera"` | 相机位置/朝向/光学控制 |
-| `"letterbox"` | 遮幅黑边 |
-| `"audio"` | 音频播放 |
-| `"event"` | 服务端命令事件 |
-| `"mod_event"` | 第三方模组扩展事件 |
+解析器大小写不敏感，`"camera"` 和 `"CAMERA"` 都可以。
 
----
+| 类型 | 说明 |
+| --- | --- |
+| `CAMERA` | 相机位置、朝向和光学参数 |
+| `LETTERBOX` | 电影黑边 |
+| `AUDIO` | 音频片段数据 |
+| `EVENT` | 服务端命令事件数据 |
+| `MOD_EVENT` | 第三方模组事件数据 |
 
-## 4. Camera 轨道
+## Camera clip
 
-### Clip 字段
+| 字段 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `start_time` | float | 是 | 无 | 全局时间轴起点，单位秒 |
+| `duration` | float | 是 | 无 | 持续时间，正数有限，负数无限，不能为 0 |
+| `transition` | string | 否 | `cut` | `cut` 或 `morph` |
+| `transition_duration` | float | 否 | `0.5` | `morph` 过渡时长 |
+| `interpolation` | string | 否 | `linear` | `linear`、`smooth` 等枚举 |
+| `position_mode` | string | 否 | `relative` | `relative` 或 `absolute` |
+| `loop` | boolean | 否 | `false` | 是否循环 |
+| `loop_count` | int | 否 | `-1` | `-1` 表示无限循环 |
+| `curve` | object | 否 | `null` | 贝塞尔路径配置 |
+| `keyframes` | array | 是 | 无 | 至少 1 个关键帧，时间必须递增 |
 
-| 字段 | 类型 | 必需 | 默认 | 说明 |
-|------|------|------|------|------|
-| `start_time` | float | 是 | — | 全局时间线起始点（秒） |
-| `duration` | float | 是 | — | 持续时间，正数=定长，负数=无限 |
-| `transition` | string | 否 | `"cut"` | `"cut"`=硬切，`"morph"`=线性过渡 |
-| `transition_duration` | float | 否 | `0.5` | morph 过渡时长（秒） |
-| `interpolation` | string | 否 | `"linear"` | `"linear"` 或 `"smooth"`（预留） |
-| `position_mode` | string | 否 | `"relative"` | `"relative"`=相对玩家，`"absolute"`=世界坐标 |
-| `loop` | boolean | 否 | `false` | 是否循环播放 |
-| `loop_count` | int | 否 | `-1` | `-1`=无限循环 |
-| `curve` | object | 否 | `null` | 贝塞尔路径曲线 |
-| `keyframes` | array | 是 | — | 关键帧数组，至少 1 个 |
+### 关键帧
 
-### curve（贝塞尔曲线）
+| 字段 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `time` | float | 是 | 无 | clip 内时间偏移，不能为负 |
+| `position` | object | 是 | 无 | 坐标 |
+| `yaw` | float | 是 | 无 | 偏航角 |
+| `pitch` | float | 是 | 无 | 俯仰角 |
+| `roll` | float | 是 | 无 | 翻滚角 |
+| `fov` | float | 是 | 无 | 视场角 |
+| `zoom` | float | 否 | `1.0` | 缩放倍率 |
+| `dof` | float | 否 | `0.0` | 景深强度，当前预留 |
+
+相对坐标：
+
+```json
+"position_mode": "relative",
+"position": { "dx": 5, "dy": 2, "dz": 3 }
+```
+
+绝对坐标：
+
+```json
+"position_mode": "absolute",
+"position": { "x": 100, "y": 64, "z": 200 }
+```
+
+### 贝塞尔曲线
 
 ```json
 "curve": {
   "type": "bezier",
   "control_points": [
     { "x": 10, "y": 1.5, "z": 3 },
-    { "x": 0,  "y": 2.0, "z": -2 }
+    { "x": 0, "y": 2.0, "z": -2 }
   ]
 }
 ```
 
-| 字段 | 类型 | 必需 | 默认 | 说明 |
-|------|------|------|------|------|
-| `type` | string | 否 | `"bezier"` | 曲线类型 |
-| `control_points` | array | 是 | — | 2 个控制点，每个含 `x`/`y`/`z` |
+`control_points` 必须恰好包含 2 个点。
 
-### Keyframe 字段
+## Letterbox clip
 
-| 字段 | 类型 | 必需 | 默认 | 说明 |
-|------|------|------|------|------|
-| `time` | float | 是 | — | 在 clip 内的时间偏移（秒），从 0 开始 |
-| `position` | object | 是 | — | 位置，格式见下方 |
-| `yaw` | float | 是 | — | 偏航角（度）。0=南，90=西，±180=北 |
-| `pitch` | float | 是 | — | 俯仰角（度）。正=向下看 |
-| `roll` | float | 是 | — | 翻滚角（度）。正=左倾 |
-| `fov` | float | 是 | — | 视场角（度），标准 70 |
-| `zoom` | float | 否 | `1.0` | 缩放倍率，`>1`=放大 |
-| `dof` | float | 否 | `0.0` | 景深强度（预留） |
+| 字段 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `start_time` | float | 是 | 无 | 起始时间 |
+| `duration` | float | 是 | 无 | 持续时间 |
+| `enabled` | boolean | 否 | `true` | 是否启用 |
+| `aspect_ratio` | float | 否 | `2.35` | 目标宽高比 |
+| `fade_in` | float | 否 | `0.5` | 淡入时间 |
+| `fade_out` | float | 否 | `0.5` | 淡出时间 |
 
-### Position（相对模式 `relative`）
+## Audio clip
 
-```json
-"position": { "dx": 30, "dy": 2, "dz": 0 }
-```
-
-| 字段 | 类型 | 说明 |
-|------|------|------|
-| `dx` | float | 相对玩家位置的 X 偏移 |
-| `dy` | float | 相对玩家位置的 Y 偏移 |
-| `dz` | float | 相对玩家位置的 Z 偏移 |
-
-### Position（绝对模式 `absolute`）
-
-```json
-"position": { "x": 100, "y": 64, "z": 200 }
-```
-
-| 字段 | 类型 | 说明 |
-|------|------|------|
-| `x` | float | 世界坐标 X |
-| `y` | float | 世界坐标 Y |
-| `z` | float | 世界坐标 Z |
-
----
-
-## 5. Letterbox 轨道
-
-| 字段 | 类型 | 必需 | 默认 | 说明 |
-|------|------|------|------|------|
-| `start_time` | float | 是 | — | 起始时间 |
-| `duration` | float | 是 | — | 持续时间 |
-| `enabled` | boolean | 否 | `true` | 是否启用遮幅 |
-| `aspect_ratio` | float | 否 | `2.35` | 画面宽高比。常见：`2.35`（电影）, `1.778`（16:9）, `2.0` |
-| `fade_in` | float | 否 | `0.5` | 渐入时长（秒），`0`=瞬间出现 |
-| `fade_out` | float | 否 | `0.5` | 渐出时长（秒），`0`=瞬间消失 |
-
----
-
-## 6. Audio 轨道
-
-| 字段 | 类型 | 必需 | 默认 | 说明 |
-|------|------|------|------|------|
-| `start_time` | float | 是 | — | 起始时间 |
-| `duration` | float | 是 | — | 持续时间 |
-| `sound` | string | 是 | — | 声音 ID，如 `"minecraft:ambient.cave"` |
-| `volume` | float | 否 | `1.0` | 音量（`0.0` ~ `1.0`） |
-| `pitch` | float | 否 | `1.0` | 音调（`0.5` ~ `2.0`） |
+| 字段 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `start_time` | float | 是 | 无 | 起始时间 |
+| `duration` | float | 是 | 无 | 持续时间 |
+| `sound` | string | 是 | 无 | 声音 ID，如 `minecraft:music.game` |
+| `volume` | float | 否 | `1.0` | 音量 |
+| `pitch` | float | 否 | `1.0` | 音调 |
 | `loop` | boolean | 否 | `false` | 是否循环 |
-| `fade_in` | float | 否 | `0.0` | 淡入时长（秒） |
-| `fade_out` | float | 否 | `0.0` | 淡出时长（秒） |
+| `fade_in` | float | 否 | `0.0` | 淡入 |
+| `fade_out` | float | 否 | `0.0` | 淡出 |
 
----
+## Event clip
 
-## 7. Event 轨道
-
-| 字段 | 类型 | 必需 | 说明 |
-|------|------|------|------|
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
 | `start_time` | float | 是 | 起始时间 |
-| `duration` | float | 是 | `0`=瞬间执行 |
-| `event_type` | string | 是 | 固定为 `"command"` |
-| `command` | string | 是 | 要执行的命令，如 `"/time set 6000"` |
+| `duration` | float | 是 | 事件片段持续时间，通常为 `0` |
+| `event_type` | string | 是 | 通常为 `command` |
+| `command` | string | 是 | 要执行的命令，如 `/weather clear` |
 
----
+## ModEvent clip
 
-## 8. ModEvent 轨道
-
-| 字段 | 类型 | 必需 | 默认 | 说明 |
-|------|------|------|------|------|
-| `start_time` | float | 是 | — | 起始时间 |
-| `duration` | float | 是 | — | 持续时间 |
-| `event_type` | string | 是 | — | 自定义事件 ID，如 `"mymod:animation"` |
+| 字段 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `start_time` | float | 是 | 无 | 起始时间 |
+| `duration` | float | 是 | 无 | 持续时间 |
+| `event_type` | string | 是 | 无 | 第三方事件 ID |
 | `data` | object | 否 | `{}` | 任意自定义数据 |
 
----
-
-## 完整示例
+## 最小示例
 
 ```json
 {
   "meta": {
-    "id": "my_cinematic",
-    "name": "我的过场动画",
-    "author": "ImmersiveCinematics",
+    "id": "intro",
+    "name": "入场镜头",
+    "author": "MapAuthor",
     "version": 3,
-    "description": "一个完整的示例脚本",
+    "description": "玩家登录后播放的短镜头",
     "block_keyboard": true,
     "block_mouse": true,
     "hide_hud": true,
@@ -256,71 +229,58 @@
         "id": "on_login",
         "type": "login",
         "repeatable": true,
-        "delay": 1.0
+        "delay": 1.0,
+        "conditions": {}
       }
     ]
   },
   "timeline": {
-    "total_duration": 30.0,
+    "total_duration": 6.0,
     "tracks": [
       {
-        "type": "camera",
+        "type": "CAMERA",
         "clips": [
           {
             "start_time": 0.0,
-            "duration": 10.0,
+            "duration": 6.0,
             "transition": "cut",
             "interpolation": "linear",
             "position_mode": "relative",
             "keyframes": [
               {
                 "time": 0.0,
-                "position": { "dx": 5, "dy": 2, "dz": 3 },
-                "yaw": 90, "pitch": 5, "roll": 0,
-                "fov": 70, "zoom": 1.0, "dof": 0
+                "position": { "dx": 6, "dy": 2, "dz": 4 },
+                "yaw": 120,
+                "pitch": 8,
+                "roll": 0,
+                "fov": 70,
+                "zoom": 1.0,
+                "dof": 0
               },
               {
-                "time": 10.0,
-                "position": { "dx": 0, "dy": 2, "dz": 0 },
-                "yaw": 0, "pitch": 10, "roll": 0,
-                "fov": 70, "zoom": 1.0, "dof": 0
+                "time": 6.0,
+                "position": { "dx": 2, "dy": 2, "dz": 2 },
+                "yaw": 95,
+                "pitch": 10,
+                "roll": 0,
+                "fov": 65,
+                "zoom": 1.2,
+                "dof": 0
               }
             ]
           }
         ]
       },
       {
-        "type": "letterbox",
+        "type": "LETTERBOX",
         "clips": [
           {
             "start_time": 0.0,
-            "duration": 30.0,
+            "duration": 6.0,
+            "enabled": true,
             "aspect_ratio": 2.35,
             "fade_in": 0.5,
             "fade_out": 0.5
-          }
-        ]
-      },
-      {
-        "type": "audio",
-        "clips": [
-          {
-            "start_time": 0.0,
-            "duration": 30.0,
-            "sound": "minecraft:music.game",
-            "volume": 0.8,
-            "loop": false
-          }
-        ]
-      },
-      {
-        "type": "event",
-        "clips": [
-          {
-            "start_time": 5.0,
-            "duration": 0.0,
-            "event_type": "command",
-            "command": "/weather clear"
           }
         ]
       }

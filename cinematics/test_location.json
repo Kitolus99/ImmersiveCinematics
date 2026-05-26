@@ -1,10 +1,10 @@
-{
+﻿{
   "meta": {
     "id": "test_location",
     "name": "测试-位置触发",
     "author": "ImmersiveCinematics",
     "version": 3,
-    "description": "玩家进入 y≈70、x/z ±100 区域时触发",
+    "description": "玩家进入指定区域时触发",
     "triggers": [
       {
         "id": "enter_area",

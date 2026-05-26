@@ -18,10 +18,11 @@ forge_jars.txt
 gradle_forge_path.txt
 ingamehud.txt
 
-# --- 关键修复：只忽略根目录下的参考文件夹 ---
+# 只忽略根目录下的参考文件夹
 /example/
 /main/test/
-# 系统与日志
+
+# 系统文件与日志
 logs/
 *.log
 .DS_Store

@@ -1,10 +1,10 @@
-{
+﻿{
   "meta": {
     "id": "test_inventory",
     "name": "测试-物品栏触发",
     "author": "ImmersiveCinematics",
     "version": 3,
-    "description": "玩家背包中有木镐时触发（含通配符测试）",
+    "description": "玩家背包中有木镐时触发",
     "triggers": [
       {
         "id": "has_pickaxe",

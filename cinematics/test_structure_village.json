@@ -1,10 +1,10 @@
-{
+﻿{
   "meta": {
     "id": "test_structure_village",
     "name": "测试-结构触发",
     "author": "ImmersiveCinematics",
     "version": 3,
-    "description": "玩家进入村庄时触发（匹配 village 类型，覆盖平原/沙漠/热带草原/针叶林/雪原五种变体）",
+    "description": "玩家进入村庄结构时触发（匹配 village 类型）",
     "triggers": [
       {
         "id": "enter_village",

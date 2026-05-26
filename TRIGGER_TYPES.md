@@ -1,28 +1,64 @@
-# Immersive Cinematics — 触发类型参考
+# ImmersiveCinematics 触发器类型参考
 
-每个脚本的 `meta.triggers` 数组可定义多个触发条件。  
-每个 trigger 包含以下通用字段：
+触发器写在脚本的 `meta.triggers` 数组中，用于让服务端在满足条件时自动播放脚本。更完整的系统说明见 [docs/zh/triggers.md](docs/zh/triggers.md)。
 
-| 字段 | 类型 | 必需 | 说明 |
-|------|------|------|------|
-| `id` | string | 是 | 触发器的唯一标识（脚本内不重复即可） |
-| `type` | string | 是 | 触发类型，见下方各类型详情 |
-| `repeatable` | boolean | 否 | 是否可重复触发，默认 `false` |
-| `delay` | number | 否 | 触发后延迟执行（秒），默认 `0` |
-| `conditions` | object | 否 | 各类型特有的条件，见下方 |
+## 通用字段
 
-所有匹配 ID 的字段均支持三种匹配模式：
+```json
+{
+  "id": "enter_village",
+  "type": "structure",
+  "repeatable": true,
+  "delay": 1.0,
+  "conditions": {
+    "structure": "village",
+    "radius": 32
+  }
+}
+```
 
-- `"minecraft:village_plains"` — 精确匹配
-- `"minecraft:*"` — 命名空间通配（匹配所有 `minecraft:` 开头的 ID）
-- `"village"` — 子串匹配（无冒号时，匹配任何包含 `village` 的 ID）
-- `"*"` — 任意匹配
+| 字段 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `id` | string | 否 | 无 | 建议保留，便于人工识别；当前服务端注册 ID 由类型和脚本 ID 派生 |
+| `type` | string | 是 | 无 | 触发类型 |
+| `repeatable` | boolean | 否 | `false` | 是否可重复触发 |
+| `delay` | number | 否 | `0` | 条件满足后延迟执行秒数 |
+| `conditions` | object | 否 | `{}` | 类型特有条件 |
 
----
+## ID 匹配规则
 
-## 1. `login`
+多数资源 ID 字段支持：
 
-玩家登录时触发一次。
+- `minecraft:zombie`：精确匹配。
+- `minecraft:*`：命名空间通配。
+- `zombie`：无冒号时做子串匹配。
+- `*`：任意匹配。
+
+注意：`advancement` 当前使用 `ResourceLocation.parse` 后查进度对象，不适合写子串或 `*`。
+
+## 类型总览
+
+| 类型 | 策略 | 说明 |
+| --- | --- | --- |
+| `login` | 事件驱动 | 玩家登录时触发 |
+| `location` | 轮询 | 玩家进入指定维度、点半径或方体区域 |
+| `advancement` | 事件驱动 | 玩家获得指定进度 |
+| `biome` | 轮询 | 玩家位于指定生物群系 |
+| `entity_kill` | 事件驱动 | 玩家击杀指定实体 |
+| `interact` | 事件驱动 | 玩家与方块或实体交互 |
+| `dimension_change` | 事件驱动 | 玩家切换到指定维度 |
+| `dimension` | 事件驱动 | `dimension_change` 的别名 |
+| `inventory` | 轮询 | 物品栏包含指定物品或数量变化 |
+| `item_craft` | 事件驱动 | 玩家合成指定物品 |
+| `item_use` | 事件驱动 | 玩家完成使用指定物品 |
+| `custom` | 事件驱动 | 由外部调用 `CustomEventTracker.fire` 触发 |
+| `command` | 事件驱动 | 当前预留，评估器固定返回 `false` |
+| `structure` | 轮询 | 玩家位于指定结构 |
+| `gamestage` | 轮询 | 玩家拥有指定 GameStages 阶段 |
+
+## `login`
+
+玩家登录时触发。
 
 ```json
 {
@@ -31,23 +67,10 @@
 }
 ```
 
----
+## `location`
 
-## 2. `location`
+玩家进入指定位置、区域或维度时触发。
 
-玩家进入指定位置/维度时触发（轮询，每 20 ticks ≈ 1 秒检测一次）。
-
-支持三种检测方式，满足任一即触发：
-
-| 条件字段 | 类型 | 必需 | 说明 |
-|---------|------|------|------|
-| `dimension` | string | 否 | 维度 ID，如 `"minecraft:overworld"` |
-| `position` | object | 否 | 点+半径检测 `{ "x": ..., "y": ..., "z": ... }` |
-| `radius` | number | 否 | 配合 `position`，默认 `0`（精确点） |
-| `corner1` | object | 否 | 方体区域对角点1 `{ "x": ..., "y": ..., "z": ... }` |
-| `corner2` | object | 否 | 方体区域对角点2 `{ "x": ..., "y": ..., "z": ... }` |
-
-**点+半径：**
 ```json
 {
   "type": "location",
@@ -59,7 +82,8 @@
 }
 ```
 
-**方体区域（需同时定义两个对角点）：**
+方体区域：
+
 ```json
 {
   "type": "location",
@@ -71,17 +95,11 @@
 }
 ```
 
-不写 `position` 或 `corner` 时只检测维度。
+只写 `dimension` 时，表示进入该维度即触发。
 
----
-
-## 3. `advancement`
+## `advancement`
 
 玩家获得指定进度时触发。
-
-| 条件字段 | 类型 | 必需 | 说明 |
-|---------|------|------|------|
-| `advancement` | string | 是 | 进度 ID，支持子串匹配 |
 
 ```json
 {
@@ -92,61 +110,36 @@
 }
 ```
 
+## `biome`
+
+玩家位于指定生物群系时触发。
+
 ```json
 {
-  "type": "advancement",
+  "type": "biome",
   "conditions": {
-    "advancement": "kill_a_mob"
+    "biome": "minecraft:desert"
   }
 }
 ```
 
----
-
-## 4. `biome`
-
-玩家进入指定生物群系时触发（轮询，每 40 ticks ≈ 2 秒检测一次）。
-
-| 条件字段 | 类型 | 必需 | 说明 |
-|---------|------|------|------|
-| `biome` | string | 是 | 群系 ID，支持子串匹配 |
-
-```json
-{
-  "type": "biome",
-  "conditions": { "biome": "minecraft:desert" }
-}
-```
-
-```json
-{
-  "type": "biome",
-  "conditions": { "biome": "plains" }
-}
-```
-
----
-
-## 5. `entity_kill`
+## `entity_kill`
 
 玩家击杀指定实体时触发。
 
-| 条件字段 | 类型 | 必需 | 说明 |
-|---------|------|------|------|
-| `entity` | string 或 string[] | 是 | 实体 ID，支持子串/通配符匹配 |
-| `mode` | string | 仅数组时可用 | `"or"`（默认）— 击杀任一触发；`"and"` — 全部击杀过才触发 |
+单实体：
 
-**单实体：**
 ```json
-{ "type": "entity_kill", "conditions": { "entity": "minecraft:zombie" } }
+{
+  "type": "entity_kill",
+  "conditions": {
+    "entity": "minecraft:zombie"
+  }
+}
 ```
 
-**通配：**
-```json
-{ "type": "entity_kill", "conditions": { "entity": "*" } }
-```
+任意一个：
 
-**OR 模式（默认）：**
 ```json
 {
   "type": "entity_kill",
@@ -157,7 +150,8 @@
 }
 ```
 
-**AND 模式：**
+全部击杀过：
+
 ```json
 {
   "type": "entity_kill",
@@ -168,163 +162,130 @@
 }
 ```
 
----
-
-## 6. `interact`
+## `interact`
 
 玩家与方块或实体交互时触发。
-
-| 条件字段 | 类型 | 必需 | 说明 |
-|---------|------|------|------|
-| `target` | string | 是 | 目标方块/实体 ID，`"*"` 表示任意交互 |
 
 ```json
 {
   "type": "interact",
-  "conditions": { "target": "minecraft:jukebox" }
+  "conditions": {
+    "target": "minecraft:jukebox"
+  }
 }
 ```
 
----
+`target: "*"` 表示任意交互。
 
-## 7. `dimension_change`
+## `dimension_change` / `dimension`
 
-玩家切换维度时触发。
-
-| 条件字段 | 类型 | 必需 | 说明 |
-|---------|------|------|------|
-| `dimension` | string | 是 | 目标维度 ID，支持子串匹配 |
+玩家切换到指定维度时触发。
 
 ```json
 {
   "type": "dimension_change",
-  "conditions": { "dimension": "minecraft:the_nether" }
+  "conditions": {
+    "dimension": "minecraft:the_nether"
+  }
 }
 ```
 
----
+## `inventory`
 
-## 8. `dimension`
+检测玩家物品栏。
 
-同 `dimension_change`。
+全部拥有：
 
 ```json
 {
-  "type": "dimension",
-  "conditions": { "dimension": "minecraft:the_end" }
+  "type": "inventory",
+  "conditions": {
+    "items": ["minecraft:diamond", "minecraft:emerald"],
+    "mode": "and"
+  }
 }
 ```
 
----
+拥有任意一个：
 
-## 9. `item_craft`
+```json
+{
+  "type": "inventory",
+  "conditions": {
+    "items": ["minecraft:diamond", "minecraft:emerald"],
+    "mode": "or"
+  }
+}
+```
+
+数量增加：
+
+```json
+{
+  "type": "inventory",
+  "conditions": {
+    "items": ["minecraft:sponge"],
+    "change": "increase"
+  }
+}
+```
+
+数量减少：
+
+```json
+{
+  "type": "inventory",
+  "conditions": {
+    "items": ["minecraft:diamond_helmet"],
+    "change": "decrease"
+  }
+}
+```
+
+注意：数量变化检测当前按完整物品 ID 建快照，`change` 场景建议写精确 ID。
+
+## `item_craft`
 
 玩家合成指定物品时触发。
-
-| 条件字段 | 类型 | 必需 | 说明 |
-|---------|------|------|------|
-| `item` | string | 是 | 物品 ID，支持子串/通配符匹配 |
 
 ```json
 {
   "type": "item_craft",
-  "conditions": { "item": "minecraft:leather_chestplate" }
+  "conditions": {
+    "item": "minecraft:leather_chestplate"
+  }
 }
 ```
 
----
+## `item_use`
 
-## 10. `item_use`
-
-玩家使用完成指定物品时触发（吃完食物、喝完药水、射完箭等）。  
-仅监听 `LivingEntityUseItemEvent.Finish`，右键按下时**不**触发。
-
-| 条件字段 | 类型 | 必需 | 说明 |
-|---------|------|------|------|
-| `item` | string | 是 | 物品 ID，支持子串/通配符匹配 |
+玩家完成使用指定物品时触发，例如吃完食物、喝完药水、完成拉弓等。
 
 ```json
 {
   "type": "item_use",
-  "conditions": { "item": "minecraft:golden_apple" }
+  "conditions": {
+    "item": "minecraft:golden_apple"
+  }
 }
 ```
 
----
+## `custom`
 
-## 11. `inventory`
-
-玩家背包物品检测（轮询，每 20 ticks ≈ 1 秒检测一次）。
-
-支持三种模式：
-
-| 模式 | 写法 | 说明 |
-|------|------|------|
-| 存在检测（AND） | `"mode": "and"`（默认） | **全部**拥有时才触发 |
-| 存在检测（OR） | `"mode": "or"` | 有**任一**即触发 |
-| 数量增加 | `"change": "increase"` | 物品数量增加时触发 |
-| 数量减少 | `"change": "decrease"` | 物品数量减少时触发 |
-
-| 条件字段 | 类型 | 必需 | 说明 |
-|---------|------|------|------|
-| `items` | string[] | 是 | 物品 ID 列表 |
-| `mode` | string | 否 | `"and"`（默认）或 `"or"` |
-| `change` | string | 否 | `"increase"` 或 `"decrease"` |
-
-**AND 模式 — 全部拥有：**
-```json
-{
-  "type": "inventory",
-  "conditions": { "items": ["minecraft:diamond", "minecraft:emerald"] }
-}
-```
-
-**OR 模式 — 有任一即可：**
-```json
-{
-  "type": "inventory",
-  "conditions": { "items": ["minecraft:diamond", "minecraft:emerald"], "mode": "or" }
-}
-```
-
-**数量增加 — 物品变多时触发：**
-```json
-{
-  "type": "inventory",
-  "conditions": { "items": ["minecraft:sponge"], "change": "increase" }
-}
-```
-
-**数量减少 — 物品变少时触发（装备、放置、消耗）：**
-```json
-{
-  "type": "inventory",
-  "conditions": { "items": ["minecraft:diamond_helmet"], "change": "decrease" }
-}
-```
-
----
-
-## 12. `custom`
-
-通过外部模组/命令调用 `CustomEventTracker.fire(player, eventId)` 时触发。
-
-| 条件字段 | 类型 | 必需 | 说明 |
-|---------|------|------|------|
-| `event_id` | string | 是 | 自定义事件 ID |
+外部代码调用 `Evaluators.CustomEventTracker.fire(player, eventId)` 后触发。
 
 ```json
 {
   "type": "custom",
-  "conditions": { "event_id": "story_beat_1" }
+  "conditions": {
+    "event_id": "story_beat_1"
+  }
 }
 ```
 
----
+## `command`
 
-## 13. `command`
-
-通过服务端命令触发（预留，当前始终返回 `false`）。
+当前为预留类型，评估器固定返回 `false`，不会自动触发。
 
 ```json
 {
@@ -333,74 +294,50 @@
 }
 ```
 
----
+## `structure`
 
-## 14. `structure`
-
-玩家进入指定结构时触发（轮询，每 20 ticks ≈ 1 秒检测一次）。  
-按配置级结构注册名匹配（如 `minecraft:village_plains`），支持子串匹配。
-
-| 条件字段 | 类型 | 必需 | 说明 |
-|---------|------|------|------|
-| `structure` | string | 是 | 结构 ID，支持子串匹配，如 `"village"` 匹配所有村庄变体 |
-| `radius` | int | 否 | 检测半径（方块），默认 `0`（仅检测玩家所在方块） |
+玩家位于指定结构时触发。
 
 ```json
 {
   "type": "structure",
-  "conditions": { "structure": "village", "radius": 32 }
+  "conditions": {
+    "structure": "village",
+    "radius": 32
+  }
 }
 ```
 
-```json
-{
-  "type": "structure",
-  "conditions": { "structure": "minecraft:fortress" }
-}
-```
+`radius` 为 0 或省略时，只检查玩家当前方块所在结构；大于 0 时会在周围采样检测。
 
-常见结构：`minecraft:village_plains`、`minecraft:village_desert`、`minecraft:village_savanna`、`minecraft:village_taiga`、`minecraft:village_snowy`、`minecraft:fortress`、`minecraft:stronghold`、`minecraft:mineshaft`、`minecraft:ancient_city`。
+## `gamestage`
 
----
-
-## 15. `gamestage`
-
-玩家拥有指定游戏阶段时触发（轮询，每 20 ticks ≈ 1 秒检测一次）。  
-需要安装 [GameStages](https://www.curseforge.com/minecraft/mc-mods/gamestages) 模组，未安装时始终返回 `false`。
-
-| 条件字段 | 类型 | 必需 | 说明 |
-|---------|------|------|------|
-| `stage` | string | 是 | 阶段名称 |
+需要安装 GameStages。未安装时始终不触发。
 
 ```json
 {
   "type": "gamestage",
-  "conditions": { "stage": "entered_dungeon" }
+  "conditions": {
+    "stage": "entered_dungeon"
+  }
 }
 ```
-
----
 
 ## 完整示例
 
 ```json
 {
   "meta": {
-    "id": "my_cinematic",
-    "name": "示例脚本",
-    "author": "ImmersiveCinematics",
+    "id": "village_intro",
+    "name": "村庄入场",
+    "author": "MapAuthor",
     "version": 3,
     "triggers": [
       {
-        "id": "on_login",
-        "type": "login",
-        "repeatable": false,
-        "delay": 1.0
-      },
-      {
         "id": "enter_village",
         "type": "structure",
-        "repeatable": true,
+        "repeatable": false,
+        "delay": 1.0,
         "conditions": {
           "structure": "village",
           "radius": 32

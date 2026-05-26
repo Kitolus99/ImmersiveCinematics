@@ -3,7 +3,6 @@ package com.immersivecinematics.immersive_cinematics.command;
 import com.immersivecinematics.immersive_cinematics.camera.CameraManager;
 import com.immersivecinematics.immersive_cinematics.control.ExitReason;
 import com.immersivecinematics.immersive_cinematics.script.CinematicScript;
-import com.immersivecinematics.immersive_cinematics.script.ScriptManager;
 import com.immersivecinematics.immersive_cinematics.script.ScriptParser;
 import com.immersivecinematics.immersive_cinematics.script.ScriptParser.ScriptParseException;
 import com.mojang.brigadier.CommandDispatcher;
@@ -41,7 +40,7 @@ public class CinematicCommand {
         CommandSourceStack source = context.getSource();
         MinecraftServer server = source.getServer();
 
-        // 搜索路径：全局目录 → 世界目录 → 绝对路径
+        // 搜索路径：全局目录 -> 世界目录 -> 绝对路径。
         Path globalDir = server.getServerDirectory().toPath().toAbsolutePath().resolve(GLOBAL_SCRIPT_DIR);
         Path worldDir = server.getWorldPath(WORLD_SCRIPT_DIR);
 
@@ -136,7 +135,7 @@ public class CinematicCommand {
             source.sendSuccess(() -> Component.literal("§e脚本模式: §f" + name +
                     " §7(剩余: " + String.format("%.1f", remaining) + "s)"), false);
         } else {
-            source.sendSuccess(() -> Component.literal("§e测试模式 §7(P键激活)"), false);
+            source.sendSuccess(() -> Component.literal("§e测试模式 §7(P 键激活)"), false);
         }
 
         return 1;
