@@ -1,0 +1,130 @@
+{
+  "repo_notes": [
+    {
+      "author": "Kitolus99",
+      "content": "本仓库的 DeepWiki 必须生成完整的简体中文 Wiki。所有页面标题、正文、摘要、表格说明、图表标题、术语解释和章节导航都使用简体中文；技术类名、文件名、JSON 字段、命令、配置键和 API 名称保持原文。生成时优先引用 docs/zh/*.md、README_CN.md、SCRIPT_FORMAT.md、TRIGGER_TYPES.md、CHANGELOG.md，再结合源码验证实现细节。不要把页面标题生成为英文，也不要把中文文档当作次要补充。"
+    }
+  ],
+  "pages": [
+    {
+      "title": "项目总览",
+      "purpose": "用简体中文说明 ImmersiveCinematics 的用途、目标用户、核心能力、运行环境、文档入口和整体代码结构。",
+      "parent": null
+    },
+    {
+      "title": "快速开始与安装",
+      "purpose": "用简体中文说明构建环境、Forge 与 Minecraft 版本、Gradle 构建命令、runClient 测试方式、安装目录和常见启动注意事项。",
+      "parent": "项目总览"
+    },
+    {
+      "title": "架构与入口",
+      "purpose": "用简体中文解释 Mod 主入口、客户端与服务端职责、事件注册、Mixin 接入点、网络注册和核心组件关系。",
+      "parent": "项目总览"
+    },
+    {
+      "title": "剧本格式与创作",
+      "purpose": "用简体中文完整说明 JSON 剧本格式、meta、timeline、tracks、clips、关键帧、轨道类型和创作流程。",
+      "parent": null
+    },
+    {
+      "title": "元信息与触发条件",
+      "purpose": "用简体中文详细说明 meta 字段、脚本标识、名称、描述、触发器数组、自动播放、可跳过、冷却和触发逻辑组合。",
+      "parent": "剧本格式与创作"
+    },
+    {
+      "title": "时间线、轨道与片段",
+      "purpose": "用简体中文详细说明 timeline、CAMERA、LETTERBOX、AUDIO、EVENT、MOD_EVENT 等轨道和 clips 数据结构。",
+      "parent": "剧本格式与创作"
+    },
+    {
+      "title": "示例剧本与最佳实践",
+      "purpose": "用简体中文分析 cinematics/*.json 示例文件，说明常见镜头、触发器示例、字段组合和排错建议。",
+      "parent": "剧本格式与创作"
+    },
+    {
+      "title": "播放引擎",
+      "purpose": "用简体中文说明客户端播放流程、渲染帧驱动、时间推进、脚本生命周期、退出原因和与游戏状态的关系。",
+      "parent": null
+    },
+    {
+      "title": "摄像机系统",
+      "purpose": "用简体中文解释 CameraManager、CameraPath、CameraProperties、CameraMixin、FOV、Zoom、Roll、插值和 Morph 转场。",
+      "parent": "播放引擎"
+    },
+    {
+      "title": "ScriptPlayer 与轨道播放器",
+      "purpose": "用简体中文说明 ScriptPlayer 如何调度 TrackPlayer，以及 CameraTrackPlayer、LetterboxTrackPlayer 等播放器的职责。",
+      "parent": "播放引擎"
+    },
+    {
+      "title": "遮幅、HUD 与输入控制",
+      "purpose": "用简体中文说明 Letterbox、OverlayManager、跳过 HUD、按键绑定、输入屏蔽、视角晃动抑制和播放中状态控制。",
+      "parent": "播放引擎"
+    },
+    {
+      "title": "服务端触发系统",
+      "purpose": "用简体中文说明服务端如何监听世界状态、玩家行为和事件，并决定何时向客户端播放过场。",
+      "parent": null
+    },
+    {
+      "title": "TriggerEngine 与 Evaluators",
+      "purpose": "用简体中文详细说明 TriggerEngine、TriggerRegistry、Evaluators、轮询触发器、事件驱动触发器和 14 类触发条件。",
+      "parent": "服务端触发系统"
+    },
+    {
+      "title": "触发状态持久化与冷却",
+      "purpose": "用简体中文说明 ScriptEventManager、TriggerStateStore、一次性触发、冷却时间、玩家状态和完成回传。",
+      "parent": "服务端触发系统"
+    },
+    {
+      "title": "网络同步",
+      "purpose": "用简体中文说明 S2CPlayScriptPacket、C2SScriptFinishedPacket、客户端接收、服务端回执和脚本同步流程。",
+      "parent": "服务端触发系统"
+    },
+    {
+      "title": "游戏内编辑器",
+      "purpose": "用简体中文说明内置编辑器的入口、界面结构、文档模型、实时预览、保存流程和与播放引擎的桥接。",
+      "parent": null
+    },
+    {
+      "title": "EditorScreen 与文档模型",
+      "purpose": "用简体中文解释 EditorScreen、EditorDocument、EditorSelection、EditorOperations 的职责和数据流。",
+      "parent": "游戏内编辑器"
+    },
+    {
+      "title": "时间线区域",
+      "purpose": "用简体中文说明 TimelineArea 的缩放、滚动、轨道显示、片段拖拽、关键帧编辑和选区交互。",
+      "parent": "游戏内编辑器"
+    },
+    {
+      "title": "属性面板、预览与输出",
+      "purpose": "用简体中文说明左侧面板、属性检查器、预览区域、FBO 输出、EditorBridgeImpl 和脚本热更新。",
+      "parent": "游戏内编辑器"
+    },
+    {
+      "title": "编辑器控件库",
+      "purpose": "用简体中文说明编辑器自定义控件、按钮、字段、下拉项、本地化键和 UI 状态更新方式。",
+      "parent": "游戏内编辑器"
+    },
+    {
+      "title": "配置与本地化",
+      "purpose": "用简体中文说明配置系统、默认值、配置界面、语言文件、翻译键和中文 UI 文案维护方式。",
+      "parent": null
+    },
+    {
+      "title": "配置系统",
+      "purpose": "用简体中文详细说明 Config.java、ForgeConfigSpec、跳过时间、跳过投票、调试日志和触发轮询间隔配置。",
+      "parent": "配置与本地化"
+    },
+    {
+      "title": "中文语言文件与 UI 文案",
+      "purpose": "用简体中文说明 zh_cn.json、en_us.json、Component.translatable、配置界面、HUD、编辑器菜单和触发器标签。",
+      "parent": "配置与本地化"
+    },
+    {
+      "title": "术语表",
+      "purpose": "用简体中文解释仓库中的核心术语、类名、脚本概念、摄像机术语、触发器术语和常见缩写。",
+      "parent": null
+    }
+  ]
+}
