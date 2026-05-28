@@ -1,43 +1,43 @@
 # ImmersiveCinematics
 
-Add cutscenes to Minecraft modpacks, adventure maps, and servers. Authors can write JSON scripts or use the in-game timeline editor.
+给 Minecraft 整合包、冒险地图和服务器剧情添加可编排的过场动画。你可以手写 JSON 脚本，也可以在游戏内用时间轴编辑器创建镜头。
 
-[中文文档](README_CN.md) | [中文 Wiki](docs/zh/index.md) | [Script Format](SCRIPT_FORMAT.md) | [Trigger Reference](TRIGGER_TYPES.md)
+[English Documentation](README_EN.md) | [中文 Wiki](docs/zh/index.md) | [脚本格式](SCRIPT_FORMAT.md) | [触发器参考](TRIGGER_TYPES.md)
 
-> This repository is a fork of `SanZiNEO/ImmersiveCinematics`. The Chinese documentation was rebuilt from the local source tree and DeepWiki analysis.
+> 本仓库是 `SanZiNEO/ImmersiveCinematics` 的 fork。当前中文资料基于本地源码、DeepWiki 结构化分析和仓库内文档重建，目标是让 DeepWiki 与 GitHub 首页都以中文为主入口。
 
-## What Is This?
+## 这是什么
 
-ImmersiveCinematics is a Minecraft Forge 1.20.1 mod for scripted cinematic playback.
+ImmersiveCinematics 是一个 Minecraft Forge 1.20.1 过场动画模组。它把“何时播放”和“如何播放”分开：
 
-- The server-side trigger engine decides when a script should play.
-- The client-side playback engine drives camera movement, letterbox overlays, and timeline tracks.
-- The in-game editor lets authors create and preview scripts without leaving the game.
+- 服务端触发系统监听登录、位置、进度、生物群系、维度切换、击杀、交互、合成、使用物品、物品栏、结构、游戏阶段、自定义事件等条件。
+- 客户端播放引擎解析 JSON 脚本，并驱动相机、黑边、音频、事件轨道等时间轴内容。
+- 游戏内编辑器提供可视化时间轴、预览区、属性面板和触发器面板，适合不想手写完整 JSON 的作者。
 
-## Use Cases
+## 适用场景
 
-- Area intro cutscenes.
-- Boss fight presentation shots.
-- Fixed-camera puzzle rooms.
-- Server tutorials and guided map tours.
-- Story beats combined with server commands or other mods.
+- 玩家进入新区域时自动播放入场镜头。
+- Boss 战前播放剧情展示或场景巡视。
+- 解谜房间使用固定机位或轨道镜头。
+- 服务器新手引导、地图导览、建筑展示。
+- 和命令、其它模组事件结合，做更完整的叙事流程。
 
-## Features
+## 功能概览
 
-- 6-DOF camera: position, yaw, pitch, roll, FOV, zoom.
-- Keyframes, relative/absolute positioning, loops, infinite duration.
-- Timeline tracks: `camera`, `letterbox`, `audio`, `event`, `mod_event`.
-- Letterbox overlays with aspect ratio and fade control.
-- Server triggers for login, location, advancement, biome, dimension change, entity kill, interaction, crafting, item use, inventory, structure, gamestage, custom events, and command placeholders.
-- Runtime behavior flags for input blocking, HUD hiding, bob suppression, skipping, interruption, and hold-at-end playback.
-- In-game editor: press `F6` by default. Hold `C` by default to skip skippable scripts.
+- 6 自由度相机：位置、yaw、pitch、roll、FOV、zoom。
+- 关键帧动画、相对/绝对坐标、循环、无限时长。
+- 多轨道时间轴：`camera`、`letterbox`、`audio`、`event`、`mod_event`。
+- 电影黑边，支持宽高比、淡入、淡出。
+- 服务端触发器，支持事件驱动和轮询驱动两类流程。
+- 运行时行为控制：屏蔽输入、隐藏 HUD/手臂、抑制视角晃动、可跳过、可打断、末帧保持等。
+- 游戏内编辑器：默认按 `F6` 打开，默认长按 `C` 跳过可跳过脚本。
 
-## Getting Started
+## 快速开始
 
-1. Install Minecraft Forge 1.20.1 (47.x).
-2. Put the built jar into `.minecraft/mods/`.
-3. Put JSON scripts into `immersive_cinematics/scripts/`.
-4. Use commands in game:
+1. 安装 Minecraft Forge 1.20.1（47.x）。
+2. 将构建出的 jar 放入 `.minecraft/mods/`。
+3. 将 `.json` 过场脚本放到 `immersive_cinematics/scripts/`。
+4. 进入游戏后使用命令播放：
 
 ```mcfunction
 /icinematics play example_orbit
@@ -45,18 +45,24 @@ ImmersiveCinematics is a Minecraft Forge 1.20.1 mod for scripted cinematic playb
 /icinematics status
 ```
 
-## Development
+脚本搜索顺序见 [配置与命令](docs/zh/configuration.md)：全局目录、世界目录、绝对路径。
+
+## 开发验证
 
 ```powershell
 .\gradlew.bat build --stacktrace --no-daemon
 .\gradlew.bat runClient --stacktrace --no-daemon
 ```
 
-`runClient` starts the Minecraft development client and stays open until you close the game.
+`runClient` 会启动 Minecraft 开发客户端，不会自动退出；看到客户端正常进入后，手动关闭即可。
 
-## Documentation
+当前已验证构建产物：
 
-The most complete documentation in this fork is currently in Chinese:
+```text
+build/libs/immersive_cinematics-0.3.1.jar
+```
+
+## 阅读入口
 
 - [中文 Wiki 总览](docs/zh/index.md)
 - [架构说明](docs/zh/architecture.md)
@@ -66,15 +72,25 @@ The most complete documentation in this fork is currently in Chinese:
 - [游戏内编辑器](docs/zh/editor.md)
 - [配置与命令](docs/zh/configuration.md)
 
-## Version
+## DeepWiki 中文化说明
 
-| Item | Version |
+DeepWiki 会优先读取仓库根目录内容生成 Wiki。本 fork 已经提供：
+
+- 根目录中文 `README.md`。
+- 中文文档目录 `docs/zh/`。
+- DeepWiki 生成配置 `.devin/wiki.json`，要求页面标题、正文、摘要、表格说明和章节导航全部使用简体中文。
+
+如果 [DeepWiki 页面](https://deepwiki.com/Kitolus99/ImmersiveCinematics) 仍显示英文，通常是因为 DeepWiki 仍在使用旧索引；等待刷新冷却结束后重新索引即可。
+
+## 版本
+
+| 项目 | 版本 |
 | --- | --- |
 | Mod | 0.3.1 |
 | Minecraft | 1.20.1 |
 | Forge | 47.x |
-| Script Format | v3 |
+| 脚本格式 | v3 |
 
-## License
+## 许可证
 
 MIT License
